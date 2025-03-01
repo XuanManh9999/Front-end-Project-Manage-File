@@ -1,7 +1,86 @@
-.button {
-    font-size: 30px;
-    background-color: red;
-}
-.test {
-    color: #fff;
+.containner__login {
+  display: flex;
+  justify-content: center;
+  padding: 90px;
+  gap: 80px;
+  min-height: calc(100% - 114px);
+  .containner__login__left {
+    .containner__login__left__title {
+      color: #333;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .containner__login__left__form {
+      margin-top: 10px;
+      .containner__login__left__form__item {
+        margin-top: 12px;
+        label {
+          font-size: 16px;
+          font-weight: 600;
+          padding-bottom: 5px;
+        }
+        input.ant-input,
+        input.ant-input-password {
+          height: 40px;
+          padding: 10px 12px;
+          border-radius: 4px;
+          font-size: 14px;
+        }
+      }
+      .containner__login__left__form__forgot_pasword {
+        margin-top: 10px;
+        text-align: right;
+        color: var(--primary-color);
+        font-size: 15px;
+      }
+      .containner__login__left__form__btnLogin {
+        display: flex;
+        button {
+          padding: 0 20px;
+          font-size: 15px;
+          background-color: var(--primary-color);
+          color: #fff;
+          height: 36px;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+
+  .containner__login__center {
+    margin-top: 100px;
+    .containner__login__center__title {
+      font-size: 16px;
+      color: #bbb;
+      text-transform: uppercase;
+    }
+  }
+  .containner__login__right {
+    .containner__login__right__title {
+      font-size: 18px;
+      color: #333;
+    }
+    .containner__login__right__service {
+      margin-top: 5px;
+      display: flex;
+      gap: 10px;
+      .containner__login__right__service__item {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        border-radius: 3px;
+        padding: 0 8px;
+        height: 29px;
+        color: #fff;
+        svg {
+          font-size: 16px;
+        }
+        .containner__login__right__service__item__title {
+          font-size: 16px;
+        }
+      }
+    }
+  }
 }

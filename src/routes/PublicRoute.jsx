@@ -4,6 +4,7 @@ import Main from "../components/share/Main";
 import Login from "../components/Authentication/Login";
 import Current from "../components/Authentication/Current";
 import Register from "../components/Authentication/Register";
+import ForgotPassword from "../components/Authentication/ForgotPassword";
 
 const publicRoutes = [
   {
@@ -21,6 +22,10 @@ const publicRoutes = [
       {
         path: URL.AUTH.REGISTER,
         element: <Register />,
+      },
+      {
+        path: URL.AUTH.FORGOT_PASSWORD,
+        element: <ForgotPassword />,
       },
     ],
   },

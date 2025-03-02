@@ -31,7 +31,7 @@ function Register() {
           </div>
           <p
             className={styles.containner__register__left__form__forgot_pasword}>
-            <Link>Quên mật khẩu?</Link>
+            <Link to={"/forgot-password"}>Quên mật khẩu?</Link>
           </p>
           <div
             className={classNames(

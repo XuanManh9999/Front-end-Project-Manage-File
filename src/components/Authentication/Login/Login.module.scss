@@ -20,12 +20,9 @@
           font-weight: 600;
           padding-bottom: 5px;
         }
-        input.ant-input,
-        input.ant-input-password {
-          height: 40px;
-          padding: 10px 12px;
-          border-radius: 4px;
-          font-size: 14px;
+        input {
+          min-width: 300px;
+          font-size: 15pxf;
         }
       }
       .containner__login__left__form__forgot_pasword {

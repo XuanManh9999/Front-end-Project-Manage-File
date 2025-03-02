@@ -20,7 +20,7 @@ function Header() {
           </Link>
         </li>
         <li className={classNames(styles.header__nav__item, "flex-1")}>
-          <Link>
+          <Link to={"/"}>
             <img src="https://simgbb.com/images/logo.png" alt="Logo" />
           </Link>
         </li>

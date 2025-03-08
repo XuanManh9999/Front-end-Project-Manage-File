@@ -1,0 +1,33 @@
+.current__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .current__container__title {
+    margin: 12px 0;
+    font-size: 38px;
+    font-weight: 700;
+    text-align: center;
+    color: #333;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.25);
+  }
+  .current__container__desc {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 100;
+  }
+  .current__container__btn_start_now {
+    margin-top: 20px;
+    color: #fff;
+    font-size: 18px;
+    background-color: var(--primary-color);
+    padding: 12px 30px;
+    height: 42px;
+    margin-bottom: 10px;
+  }
+  .current__container__option_pro {
+    background: #f4f4f4;
+    width: 100%;
+    .current__container__option_pro__pakage {
+    }
+  }
+}

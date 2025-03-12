@@ -5,21 +5,58 @@ import { Input, Button, Modal } from "antd";
 import { IoLogoFacebook } from "react-icons/io5";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import classNames from "classnames";
+import { validateEmail } from "../../../utils/regex";
+
+import { showToast } from "../../../utils/toast";
+import {
+  apiForgotPassword,
+  apiVerifyOtpForgotPassword,
+} from "../../../services/auth-service";
 function ForgotPassword() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [forgotPassword, setForgotPassword] = useState({
+    email: "",
+    otp: "",
+  });
+
+  const [isLoading, setIsLoading] = useState({
+    forgotPassword: false,
+    verifyOtp: false,
+  });
+
   const onChange = (text) => {
-    console.log("onChange:", text);
-  };
-  const onInput = (value) => {
-    console.log("onInput:", value);
+    setForgotPassword((prev) => ({
+      ...prev,
+      otp: text,
+    }));
   };
   const sharedProps = {
     onChange,
-    onInput,
   };
 
-  const handleForgotPassword = () => {
-    setIsModalOpen(true);
+  const handleForgotPassword = async () => {
+    if (!validateEmail(forgotPassword.email)) {
+      return showToast.error("Email không hợp lệ");
+    }
+
+    setIsLoading((prev) => ({
+      ...prev,
+      forgotPassword: true,
+    }));
+
+    const response = await apiForgotPassword(forgotPassword);
+    if (response?.status === 200) {
+      setIsModalOpen(true);
+      setIsLoading((prev) => ({
+        ...prev,
+        forgotPassword: false,
+      }));
+      showToast.success(
+        "Mã OTP đã được gửi vào email của bạn. Vui lòng kiểm tra và hoàn thành bước tiếp theo"
+      );
+    } else {
+      showToast.error(response?.message);
+    }
   };
 
   const handleForgotPasswordClose = () => {
@@ -43,6 +80,45 @@ function ForgotPassword() {
     return () => clearTimeout(timer); // Cleanup khi component unmount
   }, [isModalOpen, timeLeft, handleForgotPasswordClose]);
 
+  const hanldeOnchangeForgotPassword = (e) => {
+    const { name, value } = e.target;
+    setForgotPassword((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmidForgotPassword = async () => {
+    if (forgotPassword.otp.length !== 6) {
+      return showToast.error("Mã OTP không hợp lệ");
+    }
+    setIsLoading((prev) => ({
+      ...prev,
+      verifyOtp: true,
+    }));
+    const response = await apiVerifyOtpForgotPassword(forgotPassword);
+    if (response?.status === 200) {
+      setIsLoading((prev) => ({
+        ...prev,
+        verifyOtp: false,
+      }));
+      showToast.success(
+        "Xác thực thành công. Chúng tôi đã gửi mật khẩu mới vào email của bạn"
+      );
+      handleForgotPasswordClose();
+    } else {
+      setIsLoading((prev) => ({
+        ...prev,
+        verifyOtp: false,
+      }));
+      showToast.error(response?.message);
+    }
+    setForgotPassword((prev) => ({
+      email: "",
+      otp: "",
+    }));
+  };
+
   return (
     <>
       <div className={styles.containner__forgotPassword}>
@@ -57,13 +133,20 @@ function ForgotPassword() {
               <Input
                 className="h-10 px-3 py-2"
                 placeholder="Nhập vào email..."
+                name="email"
+                value={forgotPassword.email}
+                onChange={hanldeOnchangeForgotPassword}
               />
             </div>
             <div
               className={classNames(
                 styles.containner__forgotPassword__left__form__btnForgotPassword
               )}>
-              <Button onClick={handleForgotPassword}>Quên Mật Khẩu</Button>
+              <Button
+                loading={isLoading.forgotPassword}
+                onClick={handleForgotPassword}>
+                Quên Mật Khẩu
+              </Button>
             </div>
           </div>
         </div>
@@ -77,19 +160,6 @@ function ForgotPassword() {
             Đăng nhập bằng
           </h2>
           <div className={styles.containner__forgotPassword__right__service}>
-            <div
-              className={classNames(
-                styles.containner__forgotPassword__right__service__item,
-                "bg-[var(--bg-facebook)]"
-              )}>
-              <IoLogoFacebook />
-              <span
-                className={
-                  styles.containner__forgotPassword__right__service__item__title
-                }>
-                Facebook
-              </span>
-            </div>
             <div
               className={classNames(
                 styles.containner__forgotPassword__right__service__item,
@@ -140,8 +210,10 @@ function ForgotPassword() {
             <span className="font-semibold text-red-500">{timeLeft}s</span>
           </p>
           <Button
+            loading={isLoading.verifyOtp}
             type="primary"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-all">
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-all"
+            onClick={handleSubmidForgotPassword}>
             Xác nhận
           </Button>
         </div>

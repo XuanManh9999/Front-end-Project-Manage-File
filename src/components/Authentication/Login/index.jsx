@@ -5,10 +5,10 @@ import { Input, Button } from "antd";
 import { IoLogoFacebook } from "react-icons/io5";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import classNames from "classnames";
-import { apiLogin } from "../../../services/auth-service";
 import { showToast } from "../../../utils/toast";
-import Cookies from "js-cookie";
 
+import { apiLogin, oauthLogin } from "../../../services/auth-service";
+import Cookies from "js-cookie";
 import {
   GithubAuthProvider,
   GoogleAuthProvider,
@@ -62,21 +62,74 @@ function Login() {
 
   const handleLoginGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      console.log(result);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const handleLoginGithub = () => {
-    const provider = new GithubAuthProvider();
     signInWithPopup(auth, provider)
-      .then((result) => {
-        console.log(result);
+      .then(async (result) => {
+        const id_token = await result.user.getIdToken();
+        const provider = result.providerId;
+        const email = result.user.email;
+        const username = result.user.displayName;
+        const avatar = result.user.photoURL;
+        const data = {
+          id_token,
+          provider,
+          email,
+          username,
+          avatar,
+        };
+
+        const response = await oauthLogin(data);
+        if (response?.status === 200) {
+          const { accessToken, refreshToken } = response;
+          Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
+          Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
+          showToast.success("Đăng nhập thành công");
+        } else {
+          showToast.error(
+            "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin"
+          );
+        }
       })
       .catch((error) => {
-        console.log(error);
+        showToast.error(
+          "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
+        );
+      });
+  };
+  const handleLoginGithub = async () => {
+    const provider = new GithubAuthProvider();
+    signInWithPopup(auth, provider)
+      .then(async (result) => {
+        console.log(result);
+
+        const id_token = await result.user.getIdToken();
+        const provider = result.providerId;
+        const email = result.user.email;
+        const username = result.user.displayName;
+        const avatar = result.user.photoURL;
+        const data = {
+          id_token,
+          provider,
+          email,
+          username,
+          avatar,
+        };
+
+        const response = await oauthLogin(data);
+        if (response?.status === 200) {
+          const { accessToken, refreshToken } = response;
+          Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
+          Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
+          showToast.success("Đăng nhập thành công");
+        } else {
+          showToast.error(
+            "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin"
+          );
+        }
+      })
+      .catch((error) => {
+        showToast.error(
+          "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
+        );
       });
   };
 
@@ -112,7 +165,9 @@ function Login() {
             className={classNames(
               styles.containner__login__left__form__btnLogin
             )}>
-            <Button onClick={handleSubmidLogin}>Đăng Nhập</Button>
+            <Button loading={loadingLogin} onClick={handleSubmidLogin}>
+              Đăng Nhập
+            </Button>
           </div>
         </div>
       </div>

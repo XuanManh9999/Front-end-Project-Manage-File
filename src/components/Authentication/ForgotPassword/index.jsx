@@ -11,7 +11,17 @@ import { showToast } from "../../../utils/toast";
 import {
   apiForgotPassword,
   apiVerifyOtpForgotPassword,
+  oauthLogin,
 } from "../../../services/auth-service";
+
+import Cookies from "js-cookie";
+import {
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth } from "../../../helper/filebase";
+
 function ForgotPassword() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [forgotPassword, setForgotPassword] = useState({
@@ -119,6 +129,80 @@ function ForgotPassword() {
     }));
   };
 
+  const handleLoginGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then(async (result) => {
+        console.log(result);
+
+        const id_token = await result.user.getIdToken();
+        const provider = result.providerId;
+        const email = result.user.email;
+        const username = result.user.displayName;
+        const avatar = result.user.photoURL;
+        const data = {
+          id_token,
+          provider,
+          email,
+          username,
+          avatar,
+        };
+
+        const response = await oauthLogin(data);
+
+        if (response?.status === 200) {
+          const { accessToken, refreshToken } = response;
+          Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
+          Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
+          showToast.success("Đăng nhập thành công");
+        } else {
+          showToast.error(
+            "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin"
+          );
+        }
+      })
+      .catch((error) => {
+        showToast.error(
+          "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
+        );
+      });
+  };
+  const handleLoginGithub = async () => {
+    const provider = new GithubAuthProvider();
+    signInWithPopup(auth, provider)
+      .then(async (result) => {
+        const id_token = await result.user.getIdToken();
+        const provider = result.providerId;
+        const email = result.user.email;
+        const username = result.user.displayName;
+        const avatar = result.user.photoURL;
+        const data = {
+          id_token,
+          provider,
+          email,
+          username,
+          avatar,
+        };
+
+        const response = await oauthLogin(data);
+        if (response?.status === 200) {
+          const { accessToken, refreshToken } = response;
+          Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
+          Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
+          showToast.success("Đăng nhập thành công");
+        } else {
+          showToast.error(
+            "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin"
+          );
+        }
+      })
+      .catch((error) => {
+        showToast.error(
+          "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
+        );
+      });
+  };
+
   return (
     <>
       <div className={styles.containner__forgotPassword}>
@@ -161,6 +245,7 @@ function ForgotPassword() {
           </h2>
           <div className={styles.containner__forgotPassword__right__service}>
             <div
+              onClick={handleLoginGithub}
               className={classNames(
                 styles.containner__forgotPassword__right__service__item,
                 "bg-[var(--bg-github)]"
@@ -174,6 +259,7 @@ function ForgotPassword() {
               </span>
             </div>
             <div
+              onClick={handleLoginGoogle}
               className={classNames(
                 styles.containner__forgotPassword__right__service__item,
                 "bg-[var(--bg-google)]"

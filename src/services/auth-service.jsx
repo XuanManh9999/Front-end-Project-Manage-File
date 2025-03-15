@@ -49,3 +49,12 @@ export const apiLogin = async (dataLogin) => {
     return error?.response?.data;
   }
 };
+
+export const oauthLogin = async (dataLogin) => {
+  try {
+    const response = await apiUser.post("/auth/oauth/login", dataLogin);
+    return response?.data;
+  } catch (error) {
+    return error?.response?.data;
+  }
+};

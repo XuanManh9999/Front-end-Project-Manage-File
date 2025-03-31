@@ -21,8 +21,10 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "../../../helper/filebase";
+import { useDispatch } from "react-redux";
 
 function ForgotPassword() {
+  const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [forgotPassword, setForgotPassword] = useState({
     email: "",
@@ -151,9 +153,14 @@ function ForgotPassword() {
         const response = await oauthLogin(data);
 
         if (response?.status === 200) {
-          const { accessToken, refreshToken } = response;
+          const { accessToken, refreshToken, userId } = response;
           Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
           Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
+          const user = await getCurrentUser(userId);
+
+          if (user?.status === 200) {
+            dispatch(setUser(user?.data, true));
+          }
           showToast.success("Đăng nhập thành công");
         } else {
           showToast.error(
@@ -186,9 +193,15 @@ function ForgotPassword() {
 
         const response = await oauthLogin(data);
         if (response?.status === 200) {
-          const { accessToken, refreshToken } = response;
+          const { accessToken, refreshToken, userId } = response;
+
           Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
           Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
+          const user = await getCurrentUser(userId);
+
+          if (user?.status === 200) {
+            dispatch(setUser(user?.data, true));
+          }
           showToast.success("Đăng nhập thành công");
         } else {
           showToast.error(

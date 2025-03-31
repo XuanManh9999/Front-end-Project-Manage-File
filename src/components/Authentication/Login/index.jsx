@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import styles from "./Login.module.scss";
 import { Link } from "react-router-dom";
 import { Input, Button } from "antd";
-import { IoLogoFacebook } from "react-icons/io5";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import classNames from "classnames";
 import { showToast } from "../../../utils/toast";
-
+import { getCurrentUser } from "../../../services/user";
 import { apiLogin, oauthLogin } from "../../../services/auth-service";
+import { useDispatch } from "react-redux";
 import Cookies from "js-cookie";
 import {
   GithubAuthProvider,
@@ -15,8 +15,10 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "../../../helper/filebase";
+import { setUser } from "../../../redux/action/userAction";
 
 function Login() {
+  const dispatch = useDispatch();
   const [loadingLogin, setLoadingLogin] = useState(false);
   const [login, setLogin] = useState({
     username: "",
@@ -45,10 +47,16 @@ function Login() {
     const response = await apiLogin(login);
 
     if (response?.status === 200) {
-      const { accessToken, refreshToken } = response;
+      const { accessToken, refreshToken, userId } = response;
+
       Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
       Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
       setLoadingLogin(false);
+      const user = await getCurrentUser(userId);
+
+      if (user?.status === 200) {
+        dispatch(setUser(user?.data, true));
+      }
       showToast.success("Đăng nhập thành công");
     } else {
       showToast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin");
@@ -79,9 +87,14 @@ function Login() {
 
         const response = await oauthLogin(data);
         if (response?.status === 200) {
-          const { accessToken, refreshToken } = response;
+          const { accessToken, refreshToken, userId } = response;
+
           Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
           Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
+          const user = await getCurrentUser(userId);
+          if (user?.status === 200) {
+            dispatch(setUser(user?.data, true));
+          }
           showToast.success("Đăng nhập thành công");
         } else {
           showToast.error(
@@ -116,9 +129,15 @@ function Login() {
 
         const response = await oauthLogin(data);
         if (response?.status === 200) {
-          const { accessToken, refreshToken } = response;
+          const { accessToken, refreshToken, userId } = response;
+
           Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
           Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
+          const user = await getCurrentUser(userId);
+
+          if (user?.status === 200) {
+            dispatch(setUser(user?.data, true));
+          }
           showToast.success("Đăng nhập thành công");
         } else {
           showToast.error(

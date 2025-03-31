@@ -6,7 +6,7 @@ const apiUser = axios.create({
 
 apiUser.interceptors.request.use(
   (config) => {
-    const token = Cookies.get("token");
+    const token = Cookies.get("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`; // Thêm token vào headers
     }
@@ -25,6 +25,8 @@ apiUser.interceptors.response.use(
   (error) => {
     // Kiểm tra nếu lỗi là do token hết hạn hoặc không hợp lệ
     if (error.response && error.response.status === 401) {
+      Cookies.remove("accessToken"); // Xóa token khỏi cookie
+      Cookies.remove("refreshToken"); // Xóa refresh token khỏi cookie
       window.location.href = ""; // Chuyển hướng về trang login
     }
     return Promise.reject(error); // Trả về lỗi để xử lý tiếp

@@ -5,7 +5,6 @@ import mainReducer from "./reducers/index";
 const persistConfig = {
   key: "auth",
   storage,
-  // Specify the reducers you want to persist
   whitelist: ["user"],
 };
 const persistedReducer = persistReducer(persistConfig, mainReducer);

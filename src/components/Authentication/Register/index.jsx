@@ -20,8 +20,13 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "../../../helper/filebase";
+import { useDispatch } from "react-redux";
+import { getCurrentUser } from "../../../services/user";
+import { setUser } from "../../../redux/action/userAction";
 
 function Register() {
+  const dispatch = useDispatch();
+
   const [isLoadingRegister, setIsLoadingRegister] = useState(false);
   const [isLoadingModal, setIsLoadingModal] = useState(false);
   const [otp, setOtp] = useState("");
@@ -153,9 +158,17 @@ function Register() {
         const response = await oauthLogin(data);
 
         if (response?.status === 200) {
-          const { accessToken, refreshToken } = response;
+          const { accessToken, refreshToken, userId } = response;
+
           Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
           Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
+
+          const user = await getCurrentUser(userId);
+
+          if (user?.status === 200) {
+            dispatch(setUser(user?.data, true));
+          }
+
           showToast.success("Đăng nhập thành công");
         } else {
           showToast.error(
@@ -188,9 +201,15 @@ function Register() {
 
         const response = await oauthLogin(data);
         if (response?.status === 200) {
-          const { accessToken, refreshToken } = response;
+          const { accessToken, refreshToken, userId } = response;
+
           Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
           Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
+          const user = await getCurrentUser(userId);
+
+          if (user?.status === 200) {
+            dispatch(setUser(user?.data, true));
+          }
           showToast.success("Đăng nhập thành công");
         } else {
           showToast.error(

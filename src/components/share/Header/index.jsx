@@ -42,10 +42,10 @@ function Header() {
 
         {isLogin && (
           <>
-            <li className={styles.header__nav__item}>
+            {/* <li className={styles.header__nav__item}>
               <FaCloudUploadAlt />
               <Link>Upload</Link>
-            </li>
+            </li> */}
             <li className={styles.header__nav__item}>
               <UserDropdown user={user} onLogout={onLogout} />
             </li>

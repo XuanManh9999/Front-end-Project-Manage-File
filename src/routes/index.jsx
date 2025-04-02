@@ -1,32 +1,39 @@
-import { useRoutes } from "react-router-dom";
-import publicRoutes from "./PublicRoute";
+import { useRoutes, useLocation, Navigate } from "react-router-dom";
 import { useEffect } from "react";
+import publicRoutes from "./PublicRoute";
+import privateRoutes from "./PrivateRouter";
 
-const PublicRoute = ({ element }) => {
-  // const [isLoading, setIsLoading] = useState(true);
-  // useEffect(() => {
-  //   document.querySelector("body").style.overflowY = "auto";
-  //   setTimeout(() => {
-  //     setIsLoading(false);
-  //   }, 1000);
-  // });
-  // if (isLoading) {
-  //   // Có thể thêm một loading spinner ở đây nếu cần
-  //   return <SpinLoading />;
-  // }
-  return element;
+const isAuthenticated = () => {
+  // Giả lập kiểm tra đăng nhập, có thể thay bằng logic lấy từ Redux, Context API, hoặc LocalStorage
+  return true; // Hoặc false nếu không đăng nhập
+};
+
+const PublicRoute = ({ children }) => {
+  return children;
+};
+
+const PrivateRoute = ({ children }) => {
+  return isAuthenticated() ? children : <Navigate to="/login" />;
 };
 
 const AppRoutes = () => {
+  const location = useLocation();
+
+  // Cuộn lên đầu mỗi khi route thay đổi
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [location.pathname]);
+
   const routes = [
     ...publicRoutes.map((route) => ({
       ...route,
-      element: <PublicRoute element={route.element} />,
+      element: <PublicRoute>{route.element}</PublicRoute>,
+    })),
+    ...privateRoutes.map((route) => ({
+      ...route,
+      element: <PrivateRoute>{route.element}</PrivateRoute>,
     })),
   ];
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, [routes]);
 
   return useRoutes(routes);
 };

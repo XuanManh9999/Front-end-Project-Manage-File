@@ -9,6 +9,8 @@ const URL = {
   },
   PRIVATE: {
     HOME: "/admin",
+    COLLECTION: "/collection",
+    COLLECTION_DETAIL: "/collection/:id",
   },
 };
 

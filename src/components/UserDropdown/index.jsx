@@ -40,8 +40,10 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
   const handleUpdate = () => {
     form.validateFields().then((values) => {
       // Gửi các giá trị cập nhật xuống server
-      onUpdate(values);
+      // onUpdate(values);
       setIsModalVisible(false);
+
+      console.log("Check value", values); // In ra giá trị đã cập nhật
     });
   };
 
@@ -96,7 +98,7 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
           onValuesChange={handleFieldChange} // Theo dõi thay đổi
         >
           <Form.Item
-            name="phone_number"
+            name="phoneNumber"
             label="Số điện thoại"
             rules={[{ message: "Vui lòng nhập số điện thoại" }]}>
             <Input placeholder="Nhập số điện thoại" />
@@ -115,7 +117,7 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
               name="avatar"
               listType="picture-card"
               showUploadList={false}
-              //   action="/upload" // Bạn có thể thay đổi action thành endpoint của server nơi bạn upload ảnh
+              action="/api/v1/user" // Bạn có thể thay đổi action thành endpoint của server nơi bạn upload ảnh
               onChange={handleAvatarChange}
               beforeUpload={(file) => {
                 const isImage = file.type.startsWith("image/");

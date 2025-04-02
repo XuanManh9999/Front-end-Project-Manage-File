@@ -5,6 +5,7 @@ import Login from "../components/Authentication/Login";
 import Current from "../components/Authentication/Current";
 import Register from "../components/Authentication/Register";
 import ForgotPassword from "../components/Authentication/ForgotPassword";
+import Collection from "../components/Collection";
 
 const publicRoutes = [
   {

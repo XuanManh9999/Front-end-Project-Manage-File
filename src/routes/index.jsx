@@ -2,14 +2,16 @@ import { useRoutes, useLocation, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import publicRoutes from "./PublicRoute";
 import privateRoutes from "./PrivateRouter";
+import { useSelector } from "react-redux";
+import { selectIsLogin } from "../redux/slice/userSlice";
 
 const isAuthenticated = () => {
-  // Giả lập kiểm tra đăng nhập, có thể thay bằng logic lấy từ Redux, Context API, hoặc LocalStorage
-  return true; // Hoặc false nếu không đăng nhập
+  const isLogin = useSelector(selectIsLogin);
+  return isLogin; // Hoặc false nếu không đăng nhập
 };
 
 const PublicRoute = ({ children }) => {
-  return children;
+  return children ? children : <Navigate to="/login" />;
 };
 
 const PrivateRoute = ({ children }) => {

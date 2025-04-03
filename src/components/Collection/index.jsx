@@ -1,36 +1,60 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./Collection.module.scss";
 import Header from "../share/Header";
 import classNames from "classnames";
-import { Button } from "antd";
+import { Button, message } from "antd";
 import { CiCamera } from "react-icons/ci";
-import { FaRegImages, FaFileAlt } from "react-icons/fa";
+import { FaRegImages, FaRegFolder } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../redux/slice/userSlice";
+import { getCollections, deleteCollection } from "../../services/collection";
+import { formatDateTime, formatSize } from "../../utils/regex";
 
 function Collection() {
+  const user = useSelector(selectUser);
+  const [collections, setCollections] = React.useState([]);
+
+  useEffect(() => {
+    const fetchingData = async () => {
+      const response = await getCollections();
+      if (response?.status === 200) {
+        setCollections(response?.data);
+      } else {
+        message.error(response?.message);
+      }
+    };
+    fetchingData();
+  }, []);
+
+  const handleDeleteFolder = (event, id) => {
+    event.preventDefault(); // Ngăn chặn hành động mặc định của thẻ <a>
+    alert(id);
+  };
+
   return (
     <>
       <Header />
       <div className={styles.detail_file}>
         <div className={styles.detail_file__backgroud}>
-          <img src="https://simgbb.com/background/nrFfnnGq8NVW.jpg" alt="" />
+          <img src={user?.backgroud || ""} alt="" />
           <Button icon={<CiCamera />}>Thay đổi ảnh bìa </Button>
         </div>
         <div className={styles.detail_file__content}>
           <div className={styles.detail_file__content__left}>
             <div className={styles.detail_file__content__left__avatar}>
-              <img src="https://simgbb.com/avatar/qkY9vQkD13Gn.jpg" alt="" />
+              <img src={user?.avatar || ""} alt="" />
             </div>
             <div className={styles.detail_file__content__left__info}>
               <div className={styles.detail_file__content__left__name}>
-                <h2>Mạnh Nguyễn</h2>
+                <h2>{user?.username || ""}</h2>
               </div>
               <div
                 className={
                   styles.detail_file__content__left__quantity_collection
                 }>
-                <span>0</span>
+                <span>{collections.length || 0}</span>
                 <span>Bộ sưu tập</span>
               </div>
             </div>
@@ -64,48 +88,37 @@ function Collection() {
             </li>
           </ul>
           <div className={styles.detail_file__data__list}>
-            <Link
-              to={"/collection/1"}
-              className={styles.detail_file__data__item}>
-              <img
-                src="https://i.ibb.co/6rxjRM2/DALL-E-2024-10-24-18-11-13-A-logo-of-a-circular-shape-resembling-a-stylized-C-in-harmonious-gradient.webp"
-                alt=""
-              />
-              <MdDelete className={styles.detail_file__data__item__delete} />
-              <p className={styles.detail_file__data__item__name}>Web learn</p>
-              <div className={styles.detail_file__data__item__quantity}>
-                <FaFileAlt />
-                <span>20</span>
-              </div>
-            </Link>
-            <Link
-              to={"/collection/1"}
-              className={styles.detail_file__data__item}>
-              <img
-                src="https://i.ibb.co/6rxjRM2/DALL-E-2024-10-24-18-11-13-A-logo-of-a-circular-shape-resembling-a-stylized-C-in-harmonious-gradient.webp"
-                alt=""
-              />
-              <MdDelete className={styles.detail_file__data__item__delete} />
-              <p className={styles.detail_file__data__item__name}>Web learn</p>
-              <div className={styles.detail_file__data__item__quantity}>
-                <FaFileAlt />
-                <span>20</span>
-              </div>
-            </Link>
-            <Link
-              to={"/collection/1"}
-              className={styles.detail_file__data__item}>
-              <img
-                src="https://i.ibb.co/6rxjRM2/DALL-E-2024-10-24-18-11-13-A-logo-of-a-circular-shape-resembling-a-stylized-C-in-harmonious-gradient.webp"
-                alt=""
-              />
-              <MdDelete className={styles.detail_file__data__item__delete} />
-              <p className={styles.detail_file__data__item__name}>Web learn</p>
-              <div className={styles.detail_file__data__item__quantity}>
-                <FaFileAlt />
-                <span>20</span>
-              </div>
-            </Link>
+            {collections?.map((collection) => (
+              <Link
+                to={`/collection/${collection.id}`}
+                className={styles.detail_file__data__item}>
+                <FaRegFolder className={styles.detail_file__data__item__icon} />
+                <div className={styles.detail_file__data__item__info}>
+                  <span className={styles.detail_file__data__item__name}>
+                    {collection?.name || ""}
+                  </span>
+                  <span className={styles.detail_file__data__item__quantity}>
+                    Tổng số files: {collection?.files?.length || 0}
+                  </span>
+                  <span className={styles.detail_file__data__item__size}>
+                    Kích thước:{" "}
+                    {formatSize(
+                      collection?.files.reduce(
+                        (sum, file) => sum + file.fileSize,
+                        0
+                      )
+                    )}
+                  </span>
+                  <span className={styles.detail_file__data__item__date}>
+                    Ngày tạo: {formatDateTime(collection?.createAt) || ""}
+                  </span>
+                </div>
+                <MdDelete
+                  className={styles.detail_file__data__item__delete}
+                  onClick={(event) => handleDeleteFolder(event, collection.id)}
+                />
+              </Link>
+            ))}
           </div>
         </div>
       </div>

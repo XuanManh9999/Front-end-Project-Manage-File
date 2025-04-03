@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Header.module.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsQuestionCircle } from "react-icons/bs";
 import { FaLanguage, FaChevronDown, FaCloudUploadAlt } from "react-icons/fa";
 import { LuLogIn } from "react-icons/lu";
@@ -13,12 +13,14 @@ import UserDropdown from "../../UserDropdown";
 import { logout } from "../../../redux/action/userAction";
 
 function Header() {
+  const nav = useNavigate();
   const dispatch = useDispatch();
   const isLogin = useSelector(selectIsLogin);
   const user = useSelector(selectUser);
 
   const onLogout = () => {
     dispatch(logout());
+    nav("/login");
   };
 
   return (

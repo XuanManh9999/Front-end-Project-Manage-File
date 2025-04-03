@@ -7,7 +7,6 @@ import {
   Form,
   Input,
   Select,
-  DatePicker,
   Button,
   Upload,
   message,
@@ -17,14 +16,21 @@ import {
   LogoutOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
+import { updateInfoUser, getCurrentUser } from "../../services/user";
+import { useDispatch } from "react-redux";
+
 import styles from "./UserDropdown.module.scss";
+import { setUser } from "../../redux/action/userAction";
 
 const UserDropdown = ({ user, onLogout, onUpdate }) => {
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [avatarPreview, setAvatarPreview] = useState(user?.avatar || "");
 
-  // Khi modal mở, load dữ liệu từ user vào form
+  // Load dữ liệu vào form khi modal mở
   useEffect(() => {
     form.setFieldsValue({ ...user });
   }, [user, form]);
@@ -37,37 +43,65 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
     setIsModalVisible(false);
   };
 
-  const handleUpdate = () => {
-    form.validateFields().then((values) => {
-      // Gửi các giá trị cập nhật xuống server
-      // onUpdate(values);
-      setIsModalVisible(false);
+  const handleUpdate = async () => {
+    try {
+      const values = await form.validateFields(); // Validate dữ liệu trước khi gửi
 
-      console.log("Check value", values); // In ra giá trị đã cập nhật
-    });
-  };
+      setIsLoading(true); // Bắt đầu tải dữ liệu
 
-  const handleAvatarChange = (info) => {
-    if (info.file.status === "done") {
-      message.success(`${info.file.name} file uploaded successfully`);
-      const reader = new FileReader();
-      reader.onload = () => setAvatarPreview(reader.result);
-      reader.readAsDataURL(info.file.originFileObj); // Đọc file dưới dạng base64 để hiển thị ảnh preview
-    } else if (info.file.status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
+      const formData = new FormData();
+      formData.append("phoneNumber", values.phoneNumber);
+      formData.append("gender", values.gender);
+
+      // Nếu có ảnh mới, thêm vào formData
+      if (values.avatar && values.avatar?.file?.originFileObj) {
+        formData.append("avatar", values.avatar?.file?.originFileObj); // Lấy file từ trường avatar
+      }
+
+      const response = await updateInfoUser(formData);
+
+      if (response?.status !== 200) throw new Error("Cập nhật thất bại");
+
+      message.success("Cập nhật thành công!");
+      // onUpdate(); // Gọi hàm cập nhật dữ liệu bên ngoài (nếu có)
+      // clear data form
+      form.resetFields(); // Reset form sau khi cập nhật thành công
+
+      const user = await getCurrentUser();
+
+      if (user?.status === 200) {
+        dispatch(setUser(user?.data, true));
+      }
+
+      setIsLoading(false); // Kết thúc tải dữ liệu
+      setTimeout(() => {
+        setIsModalVisible(false);
+      }, 2000);
+    } catch (error) {
+      setIsLoading(false); // Kết thúc tải dữ liệu
+      message.error("Cập nhật không thành công!");
     }
   };
 
-  const handleFieldChange = (changedValue, allValues) => {
-    // Theo dõi thay đổi của các trường trong form
-    console.log(allValues); // In ra dữ liệu hiện tại
+  const handleAvatarChange = ({ file, onSuccess, onError }) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Chỉ cho phép tải lên hình ảnh!");
+      return onError();
+    }
+
+    setAvatarPreview(URL.createObjectURL(file));
+
+    // Cập nhật giá trị vào form
+    form.setFieldsValue({ avatar: file }); // Lưu file vào form để khi submit lấy được
+    onSuccess();
   };
 
   const menu = (
     <Menu className={styles.dropdownMenu}>
       <Menu.Item key="user" disabled className={styles.userInfo}>
         <Avatar size={50} src={user?.avatar} className={styles.avatar} />
-        <p className={styles.userName}>{user?.name}</p>
+        <p className={styles.userName}>{user?.username}</p>
       </Menu.Item>
       <Menu.Item key="settings" className={styles.menuItem} onClick={showModal}>
         <SettingOutlined /> Cài đặt
@@ -83,7 +117,7 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
       <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
         <div className={styles.userDropdown}>
           <Avatar size={30} src={user?.avatar} />
-          <span className={styles.userName}>{user?.name}</span>
+          <span className={styles.userName}>{user?.username}</span>
         </div>
       </Dropdown>
 
@@ -92,21 +126,19 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={null}>
-        <Form
-          form={form}
-          layout="vertical"
-          onValuesChange={handleFieldChange} // Theo dõi thay đổi
-        >
+        <Form form={form} layout="vertical">
           <Form.Item
             name="phoneNumber"
             label="Số điện thoại"
-            rules={[{ message: "Vui lòng nhập số điện thoại" }]}>
+            rules={[
+              { required: true, message: "Vui lòng nhập số điện thoại" },
+            ]}>
             <Input placeholder="Nhập số điện thoại" />
           </Form.Item>
           <Form.Item
             name="gender"
             label="Giới tính"
-            rules={[{ message: "Vui lòng chọn giới tính" }]}>
+            rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}>
             <Select>
               <Select.Option value="NAM">Nam</Select.Option>
               <Select.Option value="NỮ">Nữ</Select.Option>
@@ -117,12 +149,11 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
               name="avatar"
               listType="picture-card"
               showUploadList={false}
-              action="/api/v1/user" // Bạn có thể thay đổi action thành endpoint của server nơi bạn upload ảnh
-              onChange={handleAvatarChange}
+              customRequest={handleAvatarChange}
               beforeUpload={(file) => {
                 const isImage = file.type.startsWith("image/");
                 if (!isImage) {
-                  message.error("Chỉ có thể tải lên ảnh");
+                  message.error("Chỉ có thể tải lên ảnh!");
                 }
                 return isImage;
               }}>
@@ -145,7 +176,11 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
             </Upload>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" onClick={handleUpdate} block>
+            <Button
+              loading={isLoading}
+              type="primary"
+              onClick={handleUpdate}
+              block>
               Cập nhật
             </Button>
           </Form.Item>

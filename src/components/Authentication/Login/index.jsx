@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Login.module.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input, Button } from "antd";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import classNames from "classnames";
 import { showToast } from "../../../utils/toast";
 import { getCurrentUser } from "../../../services/user";
 import { apiLogin, oauthLogin } from "../../../services/auth-service";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import {
   GithubAuthProvider,
@@ -16,8 +16,17 @@ import {
 } from "firebase/auth";
 import { auth } from "../../../helper/filebase";
 import { setUser } from "../../../redux/action/userAction";
+import { selectIsLogin } from "../../../redux/slice/userSlice";
 
 function Login() {
+  const navigate = useNavigate();
+  // const isLogin = useSelector(selectIsLogin);
+  // useEffect(() => {
+  //   if (isLogin) {
+  //     navigate("/");
+  //   }
+  // }, [isLogin, navigate]);
+
   const dispatch = useDispatch();
   const [loadingLogin, setLoadingLogin] = useState(false);
   const [login, setLogin] = useState({
@@ -51,13 +60,16 @@ function Login() {
 
       Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
       Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
-      setLoadingLogin(false);
+
       const user = await getCurrentUser(userId);
 
       if (user?.status === 200) {
         dispatch(setUser(user?.data, true));
       }
+
+      setLoadingLogin(false);
       showToast.success("Đăng nhập thành công");
+      navigate("/");
     } else {
       showToast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin");
     }
@@ -95,7 +107,9 @@ function Login() {
           if (user?.status === 200) {
             dispatch(setUser(user?.data, true));
           }
-          showToast.success("Đăng nhập thành công");
+          setTimeout(() => {
+            showToast.success("Đăng nhập thành công");
+          }, 1000);
         } else {
           showToast.error(
             "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin"
@@ -112,8 +126,6 @@ function Login() {
     const provider = new GithubAuthProvider();
     signInWithPopup(auth, provider)
       .then(async (result) => {
-        console.log(result);
-
         const id_token = await result.user.getIdToken();
         const provider = result.providerId;
         const email = result.user.email;
@@ -138,7 +150,9 @@ function Login() {
           if (user?.status === 200) {
             dispatch(setUser(user?.data, true));
           }
-          showToast.success("Đăng nhập thành công");
+          setTimeout(() => {
+            showToast.success("Đăng nhập thành công");
+          }, 1000);
         } else {
           showToast.error(
             "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin"

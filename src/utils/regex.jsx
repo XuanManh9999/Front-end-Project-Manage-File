@@ -9,4 +9,25 @@ function validatePhone(phone) {
   return phoneRegex.test(phone);
 }
 
-export { validateEmail, validatePhone };
+function formatDateTime(isoString) {
+  const date = new Date(isoString);
+
+  const day = date.getUTCDate();
+  const month = date.getUTCMonth() + 1; // Tháng trong JS bắt đầu từ 0
+  const year = date.getUTCFullYear();
+
+  const hours = date.getUTCHours();
+  const minutes = date.getUTCMinutes();
+
+  return `${day}/${month}/${year} ${hours}h${minutes}p`;
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
+  else if (bytes < 1024 * 1024 * 1024)
+    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+  else return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+}
+
+export { validateEmail, validatePhone, formatDateTime, formatSize };

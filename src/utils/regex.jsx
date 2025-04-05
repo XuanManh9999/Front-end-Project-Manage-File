@@ -16,10 +16,7 @@ function formatDateTime(isoString) {
   const month = date.getUTCMonth() + 1; // Tháng trong JS bắt đầu từ 0
   const year = date.getUTCFullYear();
 
-  const hours = date.getUTCHours();
-  const minutes = date.getUTCMinutes();
-
-  return `${day}/${month}/${year} ${hours}h${minutes}p`;
+  return `${day}/${month}/${year}`;
 }
 
 function formatSize(bytes) {

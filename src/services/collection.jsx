@@ -20,7 +20,7 @@ export const getCollectionById = async (Id) => {
 
 export const addCollection = async (body) => {
   try {
-    const response = await apiUser.post("/api/v1/collection/collections", body);
+    const response = await apiUser.post("/api/v1/collection", body);
     return response?.data;
   } catch (error) {
     return error?.response?.data;

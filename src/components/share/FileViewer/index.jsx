@@ -1,124 +1,220 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./FileViewer.module.scss";
-import { FaDownload } from "react-icons/fa";
+import {
+  FaDownload,
+  FaTrash,
+  FaEdit,
+  FaInfoCircle,
+  FaTimes,
+} from "react-icons/fa";
+import { DeleteOutlined } from "@ant-design/icons";
+import { Popconfirm } from "antd";
 
-const FileViewer = ({ fileUrl, fileType, fileName }) => {
-  // Nếu fileType không được truyền, tự suy ra extension từ fileUrl:
+const FileViewer = ({
+  file,
+  fileId,
+  fileUrl,
+  fileType,
+  fileName,
+  onDelete,
+  onEdit,
+  onInfo,
+  isSelected,
+  onSelectChange,
+}) => {
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
+
   const getExtension = (url) => {
     const parts = url.split(".");
     return parts.length > 0 ? parts.pop().toLowerCase() : "";
   };
 
-  // Sử dụng fileType nếu có, nếu không thì dùng extension
   const extension = fileType ? fileType : getExtension(fileUrl);
 
-  // Nếu file là hình ảnh
+  const renderActions = () => (
+    <div className={styles.actions}>
+      {onInfo && (
+        <button onClick={() => onInfo(file)} className={styles.iconButton}>
+          <FaInfoCircle />
+        </button>
+      )}
+      {onEdit && (
+        <button onClick={() => onEdit(file)} className={styles.iconButton}>
+          <FaEdit />
+        </button>
+      )}
+      {onDelete && (
+        <Popconfirm
+          title="Bạn có chắc muốn xóa mục này?"
+          onConfirm={() => onDelete(fileId)}
+          okText="Xóa"
+          cancelText="Hủy"
+          placement="topRight"
+          icon={<DeleteOutlined style={{ color: "red" }} />}
+          okButtonProps={{ danger: true }}>
+          <button className={styles.iconButton}>
+            <FaTrash />
+          </button>
+        </Popconfirm>
+      )}
+    </div>
+  );
+
+  const renderCheckbox = () => (
+    <div className={styles.checkboxWrapper}>
+      <input
+        type="checkbox"
+        checked={isSelected}
+        onChange={() => onSelectChange(fileId)}
+      />
+    </div>
+  );
+
+  const renderFooter = () => (
+    <div className={styles.footer}>
+      <p className={styles.fileName}>
+        {fileName.length > 20 ? fileName.slice(0, 20) + "..." : fileName}
+      </p>
+      {renderActions()}
+      <a
+        style={{
+          textDecoration: "none",
+          color: "#2d89ef",
+          fontWeight: "bold",
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+        }}
+        href={fileUrl}
+        download
+        target="_blank"
+        rel="noopener noreferrer">
+        <FaDownload /> Tải file
+      </a>
+    </div>
+  );
+
+  const renderCard = (content) => (
+    <div className={styles.card}>
+      {renderCheckbox()}
+      {content}
+      {renderFooter()}
+    </div>
+  );
+
+  // Image
   if (
     extension.startsWith("image") ||
     ["jpg", "jpeg", "png", "gif", "bmp", "webp"].includes(extension)
   ) {
     return (
-      <div className={styles.container}>
-        <img
-          src={fileUrl}
-          alt={fileName || "Uploaded image"}
-          className={styles.image}
-        />
-        <a
-          href={fileUrl}
-          download={fileName || "download"}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.downloadButton}>
-          <FaDownload className={styles.downloadIcon} />
-          Tải về
-        </a>
-      </div>
+      <>
+        {renderCard(
+          <img
+            src={fileUrl}
+            alt={fileName}
+            className={styles.image}
+            onClick={() => setIsImagePreviewOpen(true)}
+          />
+        )}
+
+        {isImagePreviewOpen && (
+          <div
+            className={styles.modalOverlay}
+            onClick={() => setIsImagePreviewOpen(false)}>
+            <div
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}>
+              <button
+                className={styles.closeButton}
+                onClick={() => setIsImagePreviewOpen(false)}>
+                <FaTimes />
+              </button>
+              <img
+                src={fileUrl}
+                alt={fileName}
+                className={styles.previewImage}
+              />
+              <div className={styles.modalFooter}>
+                <p className={styles.fileName}>
+                  {fileName.length > 20
+                    ? fileName.slice(0, 20) + "..."
+                    : fileName}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 
-  // Nếu file là video
+  // Video
   if (
     extension.startsWith("video") ||
-    ["mp4", "webm", "ogg", "mkv"].includes(extension)
+    ["mp4", "webm", "ogg"].includes(extension)
   ) {
-    // Với video định dạng mkv, trình duyệt thường không hỗ trợ phát trực tiếp
-    if (extension === "mkv" || fileType === "video/x-matroska") {
-      return (
-        <div className={styles.container}>
-          <p>Trình duyệt của bạn không hỗ trợ xem video trực tiếp.</p>
-          <a
-            href={fileUrl}
-            download={fileName || "download"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.downloadButton}>
-            <FaDownload className={styles.downloadIcon} />
-            Tải về video
-          </a>
-        </div>
-      );
-    }
-    // Các định dạng video khác có thể phát trực tiếp
-    return (
-      <div className={styles.container}>
-        <video width="100%" height="auto" controls className={styles.video}>
-          <source src={fileUrl} type={fileType} />
-          Trình duyệt của bạn không hỗ trợ video.
-        </video>
-        <a
-          href={fileUrl}
-          download={fileName || "download"}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.downloadButton}>
-          <FaDownload className={styles.downloadIcon} />
-          Tải về video
-        </a>
-      </div>
+    return renderCard(
+      <video controls className={styles.video}>
+        <source src={fileUrl} type={fileType} />
+        Trình duyệt không hỗ trợ video.
+      </video>
     );
   }
 
-  // Nếu file là PDF
-  if (extension === "pdf") {
-    return (
-      <div className={styles.container}>
+  // MKV (không stream trực tiếp)
+  if (extension === "mkv" || fileType === "video/x-matroska") {
+    return renderCard(<p>Định dạng MKV không hỗ trợ xem trực tiếp.</p>);
+  }
+
+  if (extension === "pdf" || fileType === "application/pdf") {
+    return renderCard(
+      <div className={styles.pdfPreview}>
         <iframe
           src={fileUrl}
-          title={fileName || "PDF Document"}
+          title={fileName}
+          className={styles.pdfViewer}
           width="100%"
-          height="600px"
-          className={styles.pdf}
-          style={{ border: "none" }}>
-          Trình duyệt của bạn không hỗ trợ xem PDF.
-        </iframe>
-        <a
-          href={fileUrl}
-          download={fileName || "download"}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.downloadButton}>
-          <FaDownload className={styles.downloadIcon} />
-          Tải về PDF
-        </a>
+          height="500px"
+          onError={() => alert("Không thể tải được tài liệu PDF.")}
+        />
       </div>
     );
   }
 
-  // Với các loại file khác, hiển thị link tải về
-  return (
-    <div className={styles.container}>
-      <p>Không thể hiển thị tài nguyên trực tiếp.</p>
-      <a
-        href={fileUrl}
-        download={fileName || "download"}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.downloadButton}>
-        <FaDownload className={styles.downloadIcon} />
-        Tải về file
-      </a>
-    </div>
+  // Excel, Word, PowerPoint: Sử dụng Google Docs Viewer
+  const documentIcons = {
+    xls: "/icons/excel-icon.png",
+    xlsx: "/icons/excel-icon.png",
+    ppt: "/icons/powerpoint-icon.png",
+    pptx: "/icons/powerpoint-icon.png",
+    doc: "/icons/word-icon.png",
+    docx: "/icons/word-icon.png",
+  };
+
+  if (["xls", "xlsx", "sheet"].includes(extension)) {
+    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(
+      fileUrl
+    )}&embedded=true`;
+    return renderCard(
+      <div className={styles.documentPreview}>
+        <iframe
+          src={viewerUrl}
+          title={fileName}
+          className={styles.documentViewer}
+          width="100%"
+          height="600px"
+        />
+        <p>{fileName.length > 20 ? fileName.slice(0, 20) + "..." : fileName}</p>
+      </div>
+    );
+  }
+
+  // Khác
+  return renderCard(
+    <p>
+      Không thể xem trước định dạng này: <strong>{extension}</strong>
+    </p>
   );
 };
 

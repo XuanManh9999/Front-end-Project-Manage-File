@@ -29,6 +29,9 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [avatarPreview, setAvatarPreview] = useState(user?.avatar || "");
+  const [backgroundPreview, setBackgroundPreview] = useState(
+    user?.background || ""
+  );
 
   // Load dữ liệu vào form khi modal mở
   useEffect(() => {
@@ -56,6 +59,9 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
       // Nếu có ảnh mới, thêm vào formData
       if (values.avatar && values.avatar?.file?.originFileObj) {
         formData.append("avatar", values.avatar?.file?.originFileObj); // Lấy file từ trường avatar
+      }
+      if (values.background && values.background?.file?.originFileObj) {
+        formData.append("background", values.background?.file?.originFileObj); // Lấy file từ trường background
       }
 
       const response = await updateInfoUser(formData);
@@ -94,6 +100,20 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
 
     // Cập nhật giá trị vào form
     form.setFieldsValue({ avatar: file }); // Lưu file vào form để khi submit lấy được
+    onSuccess();
+  };
+
+  const handleBackgroundChange = ({ file, onSuccess, onError }) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Chỉ cho phép tải lên hình ảnh!");
+      return onError();
+    }
+
+    setBackgroundPreview(URL.createObjectURL(file));
+
+    // Cập nhật giá trị vào form
+    form.setFieldsValue({ background: file }); // Lưu file vào form để khi submit lấy được
     onSuccess();
   };
 
@@ -160,6 +180,38 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
               {avatarPreview ? (
                 <img
                   src={avatarPreview}
+                  alt="avatar"
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <div>
+                  <UploadOutlined />
+                  <div>Chọn ảnh</div>
+                </div>
+              )}
+            </Upload>
+          </Form.Item>
+
+          <Form.Item name="background" label="Ảnh bìa">
+            <Upload
+              name="background"
+              listType="picture-card"
+              showUploadList={false}
+              customRequest={handleBackgroundChange}
+              beforeUpload={(file) => {
+                const isImage = file.type.startsWith("image/");
+                if (!isImage) {
+                  message.error("Chỉ có thể tải lên ảnh!");
+                }
+                return isImage;
+              }}>
+              {backgroundPreview ? (
+                <img
+                  src={backgroundPreview}
                   alt="avatar"
                   style={{
                     width: "100px",

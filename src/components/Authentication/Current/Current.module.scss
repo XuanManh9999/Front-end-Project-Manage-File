@@ -87,3 +87,71 @@
     }
   }
 }
+
+@media screen and (max-width: 1024px) {
+  .current__container {
+    padding: 0 20px;
+
+    .current__container__title {
+      font-size: 28px;
+    }
+
+    .current__container__desc {
+      font-size: 18px;
+    }
+
+    .current__container__btn_start_now {
+      font-size: 16px;
+      padding: 10px 24px;
+    }
+
+    .current__container__option_pro {
+      .current__container__option_pro__pakage {
+        grid-template-columns: repeat(2, 1fr); // hiển thị 2 cột thay vì 3
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .current__container {
+    .current__container__title {
+      font-size: 24px;
+    }
+
+    .current__container__desc {
+      font-size: 16px;
+    }
+
+    .current__container__btn_start_now {
+      font-size: 14px;
+      padding: 10px 20px;
+    }
+
+    .current__container__option_pro {
+      .current__container__option_pro__pakage {
+        grid-template-columns: 1fr; // chuyển về 1 cột
+        row-gap: 30px;
+      }
+
+      .current__container__option_pro__pakage__item {
+        .current__container__option_pro__pakage__item__price {
+          font-size: 26px;
+        }
+
+        .current__container__option_pro__pakage__item_desc {
+          font-size: 16px;
+        }
+
+        .current__container__option_pro__pakage__item__fuc__title {
+          font-size: 14px;
+        }
+
+        .current__container__option_pro__pakage__item_btn {
+          font-size: 16px;
+          padding: 10px 24px;
+        }
+      }
+    }
+  }
+}

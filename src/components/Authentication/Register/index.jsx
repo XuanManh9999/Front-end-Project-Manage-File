@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Register.module.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input, Button, Modal } from "antd";
 import { IoLogoFacebook } from "react-icons/io5";
 import { FaGithub, FaGoogle } from "react-icons/fa";
@@ -20,11 +20,14 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "../../../helper/filebase";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "../../../services/user";
 import { setUser } from "../../../redux/action/userAction";
+import { selectIsLogin } from "../../../redux/slice/userSlice";
 
 function Register() {
+  const navigate = useNavigate();
+  const isLogin = useSelector(selectIsLogin);
   const dispatch = useDispatch();
 
   const [isLoadingRegister, setIsLoadingRegister] = useState(false);
@@ -37,6 +40,13 @@ function Register() {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isLogin) {
+      navigate("/");
+    }
+  }, [isLogin, navigate]);
+
   const onChange = (text) => {
     setOtp(text);
   };
@@ -140,9 +150,8 @@ function Register() {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
       .then(async (result) => {
-        console.log(result);
-
         const id_token = await result.user.getIdToken();
+
         const provider = result.providerId;
         const email = result.user.email;
         const username = result.user.displayName;
@@ -157,19 +166,20 @@ function Register() {
 
         const response = await oauthLogin(data);
 
+        console.log("Check response", response);
+
         if (response?.status === 200) {
           const { accessToken, refreshToken, userId } = response;
 
           Cookies.set("accessToken", accessToken, { expires: 1 / 24 }); // 1 giờ
           Cookies.set("refreshToken", refreshToken, { expires: 14 }); // 14 ngày
-
           const user = await getCurrentUser(userId);
-
           if (user?.status === 200) {
             dispatch(setUser(user?.data, true));
           }
-
-          showToast.success("Đăng nhập thành công");
+          setTimeout(() => {
+            showToast.success("Đăng nhập thành công");
+          }, 1000);
         } else {
           showToast.error(
             "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin"
@@ -177,9 +187,15 @@ function Register() {
         }
       })
       .catch((error) => {
-        showToast.error(
-          "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
-        );
+        if (error.code === "auth/account-exists-with-different-credential") {
+          showToast.error(
+            "Tài khoản đã tồn tại với nhà cung cấp khác. Vui lòng thử lại với tài khoản khác."
+          );
+        } else {
+          showToast.error(
+            "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
+          );
+        }
       });
   };
   const handleLoginGithub = async () => {
@@ -200,6 +216,8 @@ function Register() {
         };
 
         const response = await oauthLogin(data);
+        console.log("Check response", response);
+
         if (response?.status === 200) {
           const { accessToken, refreshToken, userId } = response;
 
@@ -210,7 +228,9 @@ function Register() {
           if (user?.status === 200) {
             dispatch(setUser(user?.data, true));
           }
-          showToast.success("Đăng nhập thành công");
+          setTimeout(() => {
+            showToast.success("Đăng nhập thành công");
+          }, 1000);
         } else {
           showToast.error(
             "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin"
@@ -218,9 +238,15 @@ function Register() {
         }
       })
       .catch((error) => {
-        showToast.error(
-          "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
-        );
+        if (error.code === "auth/account-exists-with-different-credential") {
+          showToast.error(
+            "Tài khoản đã tồn tại với nhà cung cấp khác. Vui lòng thử lại với tài khoản khác."
+          );
+        } else {
+          showToast.error(
+            "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
+          );
+        }
       });
   };
 

@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Popconfirm } from "antd";
+import { handlePreview } from "../../../utils/regex";
 
 const FileViewer = ({
   file,
@@ -22,6 +23,8 @@ const FileViewer = ({
   isSelected,
   onSelectChange,
 }) => {
+  console.log("Check fileUrl", fileUrl);
+
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
 
   const getExtension = (url) => {
@@ -76,6 +79,7 @@ const FileViewer = ({
         {fileName.length > 20 ? fileName.slice(0, 20) + "..." : fileName}
       </p>
       {renderActions()}
+
       <a
         style={{
           textDecoration: "none",
@@ -175,24 +179,22 @@ const FileViewer = ({
           title={fileName}
           className={styles.pdfViewer}
           width="100%"
-          height="500px"
+          height="245px"
+          style={{ maxHeight: "245px" }}
           onError={() => alert("Không thể tải được tài liệu PDF.")}
         />
       </div>
     );
   }
 
-  // Excel, Word, PowerPoint: Sử dụng Google Docs Viewer
-  const documentIcons = {
-    xls: "/icons/excel-icon.png",
-    xlsx: "/icons/excel-icon.png",
-    ppt: "/icons/powerpoint-icon.png",
-    pptx: "/icons/powerpoint-icon.png",
-    doc: "/icons/word-icon.png",
-    docx: "/icons/word-icon.png",
-  };
-
-  if (["xls", "xlsx", "sheet"].includes(extension)) {
+  if (
+    [
+      "xls",
+      "xlsx",
+      "sheet",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ].includes(extension)
+  ) {
     const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(
       fileUrl
     )}&embedded=true`;
@@ -203,7 +205,8 @@ const FileViewer = ({
           title={fileName}
           className={styles.documentViewer}
           width="100%"
-          height="600px"
+          height="245px"
+          style={{ maxHeight: "245px" }}
         />
         <p>{fileName.length > 20 ? fileName.slice(0, 20) + "..." : fileName}</p>
       </div>

@@ -128,6 +128,13 @@
   }
 }
 
+.documentPreview {
+  width: 100%;
+  min-height: 245px;
+  max-height: 245px;
+  border: none;
+  border-radius: 8px;
+}
 .footer {
   margin-top: 10px;
   display: flex;

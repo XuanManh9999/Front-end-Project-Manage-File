@@ -145,6 +145,7 @@ const UserDropdown = ({ user, onLogout, onUpdate }) => {
         title="Cập nhật thông tin"
         visible={isModalVisible}
         onCancel={handleCancel}
+        centered
         footer={null}>
         <Form form={form} layout="vertical">
           <Form.Item

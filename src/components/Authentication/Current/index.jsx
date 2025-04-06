@@ -22,11 +22,12 @@ function Current() {
     <>
       <div className={styles.current__container}>
         <h1 className={styles.current__container__title}>
-          Quản lý tất cả tài liệu của bạn theo cách đơn giản
+          Quản lý, lưu trữ tất cả tài liệu của bạn một cách dễ dàng
         </h1>
         <p className={styles.current__container__desc}>
-          Drag and drop anywhere you want and start uploading your images now.
-          32 MB limit. Direct image links, BBCode and HTML thumbnails.
+          Kéo và thả tài liệu của bạn vào đây để bắt đầu tải lên. Giới hạn dung
+          lượng 50MB. Cung cấp chế độ preview cho các định dạng tài liệu phổ
+          biến như PDF, DOCX, XLSX, PPTX và nhiều định dạng khác.
         </p>
         <Button
           onClick={handleStartNow}
@@ -35,11 +36,11 @@ function Current() {
         </Button>
         <div className={styles.current__container__option_pro}>
           <h1 className={styles.current__container__title}>
-            ImgBB Pro account
+            Tài khoản ImgBB Pro
           </h1>
           <p className={styles.current__container__desc}>
-            ImgBB is a free image hosting service. Upgrade to unlock all the
-            features.
+            ImgBB là dịch vụ lưu trữ hình ảnh miễn phí. Nâng cấp lên Pro để mở
+            khóa tất cả các tính năng.
           </p>
           <div className={styles.current__container__option_pro__pakage}>
             <div
@@ -48,25 +49,26 @@ function Current() {
                 className={
                   styles.current__container__option_pro__pakage__item_time
                 }>
-                3 YEAR PRO
+                GÓI PRO 3 NĂM
               </p>
               <strong
                 className={
                   styles.current__container__option_pro__pakage__item__price
                 }>
-                2.99$/month
+                2.99$/tháng
               </strong>
               <p
                 className={
                   styles.current__container__option_pro__pakage__item_desc
                 }>
-                3 years of unlimited image, file hosting, no ads and no limits.
+                3 năm lưu trữ hình ảnh và tài liệu không giới hạn, không có
+                quảng cáo và không có giới hạn.
               </p>
               <Button
                 className={
                   styles.current__container__option_pro__pakage__item_btn
                 }>
-                Upgrade to Pro
+                Nâng cấp lên Pro
               </Button>
               <ul
                 className={
@@ -76,25 +78,25 @@ function Current() {
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  No Ads
+                  Không có quảng cáo
                 </li>
                 <li
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  Direct Linking
+                  Liên kết trực tiếp
                 </li>
                 <li
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  Unlimited Storage
+                  Lưu trữ không giới hạn
                 </li>
                 <li
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  Replace image feature
+                  Tính năng thay thế hình ảnh
                 </li>
               </ul>
             </div>
@@ -104,25 +106,26 @@ function Current() {
                 className={
                   styles.current__container__option_pro__pakage__item_time
                 }>
-                3 YEAR PRO
+                GÓI PRO 3 NĂM
               </p>
               <strong
                 className={
                   styles.current__container__option_pro__pakage__item__price
                 }>
-                2.99$/month
+                2.99$/tháng
               </strong>
               <p
                 className={
                   styles.current__container__option_pro__pakage__item_desc
                 }>
-                3 years of unlimited image, file hosting, no ads and no limits.
+                3 năm lưu trữ hình ảnh và tài liệu không giới hạn, không có
+                quảng cáo và không có giới hạn.
               </p>
               <Button
                 className={
                   styles.current__container__option_pro__pakage__item_btn
                 }>
-                Upgrade to Pro
+                Nâng cấp lên Pro
               </Button>
               <ul
                 className={
@@ -132,25 +135,25 @@ function Current() {
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  No Ads
+                  Không có quảng cáo
                 </li>
                 <li
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  Direct Linking
+                  Liên kết trực tiếp
                 </li>
                 <li
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  Unlimited Storage
+                  Lưu trữ không giới hạn
                 </li>
                 <li
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  Replace image feature
+                  Tính năng thay thế hình ảnh
                 </li>
               </ul>
             </div>
@@ -160,25 +163,26 @@ function Current() {
                 className={
                   styles.current__container__option_pro__pakage__item_time
                 }>
-                3 YEAR PRO
+                GÓI PRO 3 NĂM
               </p>
               <strong
                 className={
                   styles.current__container__option_pro__pakage__item__price
                 }>
-                2.99$/month
+                2.99$/tháng
               </strong>
               <p
                 className={
                   styles.current__container__option_pro__pakage__item_desc
                 }>
-                3 years of unlimited image, file hosting, no ads and no limits.
+                3 năm lưu trữ hình ảnh và tài liệu không giới hạn, không có
+                quảng cáo và không có giới hạn.
               </p>
               <Button
                 className={
                   styles.current__container__option_pro__pakage__item_btn
                 }>
-                Upgrade to Pro
+                Nâng cấp lên Pro
               </Button>
               <ul
                 className={
@@ -188,25 +192,25 @@ function Current() {
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  No Ads
+                  Không có quảng cáo
                 </li>
                 <li
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  Direct Linking
+                  Liên kết trực tiếp
                 </li>
                 <li
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  Unlimited Storage
+                  Lưu trữ không giới hạn
                 </li>
                 <li
                   className={
                     styles.current__container__option_pro__pakage__item__fuc__title
                   }>
-                  Replace image feature
+                  Tính năng thay thế hình ảnh
                 </li>
               </ul>
             </div>

@@ -27,4 +27,19 @@ function formatSize(bytes) {
   else return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
 }
 
-export { validateEmail, validatePhone, formatDateTime, formatSize };
+const handlePreview = async (fileUrl) => {
+  const res = await fetch(fileUrl);
+  const blob = await res.blob();
+  const arrayBuffer = await blob.arrayBuffer();
+  const workbook = XLSX.read(arrayBuffer, { type: "array" });
+  const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+  const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+  return data;
+};
+export {
+  validateEmail,
+  validatePhone,
+  formatDateTime,
+  formatSize,
+  handlePreview,
+};

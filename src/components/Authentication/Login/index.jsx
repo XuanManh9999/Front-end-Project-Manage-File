@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Login.module.scss";
 import { Link, useNavigate } from "react-router-dom";
-import { Input, Button } from "antd";
+import { Input, Button, message } from "antd";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import classNames from "classnames";
 import { showToast } from "../../../utils/toast";
@@ -20,12 +20,12 @@ import { selectIsLogin } from "../../../redux/slice/userSlice";
 
 function Login() {
   const navigate = useNavigate();
-  // const isLogin = useSelector(selectIsLogin);
-  // useEffect(() => {
-  //   if (isLogin) {
-  //     navigate("/");
-  //   }
-  // }, [isLogin, navigate]);
+  const isLogin = useSelector(selectIsLogin);
+  useEffect(() => {
+    if (isLogin) {
+      navigate("/");
+    }
+  }, [isLogin, navigate]);
 
   const dispatch = useDispatch();
   const [loadingLogin, setLoadingLogin] = useState(false);
@@ -85,6 +85,7 @@ function Login() {
     signInWithPopup(auth, provider)
       .then(async (result) => {
         const id_token = await result.user.getIdToken();
+
         const provider = result.providerId;
         const email = result.user.email;
         const username = result.user.displayName;
@@ -98,6 +99,9 @@ function Login() {
         };
 
         const response = await oauthLogin(data);
+
+        console.log("Check response", response);
+
         if (response?.status === 200) {
           const { accessToken, refreshToken, userId } = response;
 
@@ -117,9 +121,15 @@ function Login() {
         }
       })
       .catch((error) => {
-        showToast.error(
-          "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
-        );
+        if (error.code === "auth/account-exists-with-different-credential") {
+          showToast.error(
+            "Tài khoản đã tồn tại với nhà cung cấp khác. Vui lòng thử lại với tài khoản khác."
+          );
+        } else {
+          showToast.error(
+            "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
+          );
+        }
       });
   };
   const handleLoginGithub = async () => {
@@ -140,6 +150,8 @@ function Login() {
         };
 
         const response = await oauthLogin(data);
+        console.log("Check response", response);
+
         if (response?.status === 200) {
           const { accessToken, refreshToken, userId } = response;
 
@@ -160,9 +172,15 @@ function Login() {
         }
       })
       .catch((error) => {
-        showToast.error(
-          "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
-        );
+        if (error.code === "auth/account-exists-with-different-credential") {
+          showToast.error(
+            "Tài khoản đã tồn tại với nhà cung cấp khác. Vui lòng thử lại với tài khoản khác."
+          );
+        } else {
+          showToast.error(
+            "Đã xảy ra lỗi bất ngờ khi đăng nhập. Vui lòng thử lại sau"
+          );
+        }
       });
   };
 

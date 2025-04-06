@@ -26,16 +26,21 @@ function Header() {
   return (
     <header className={styles.header}>
       <ul className={styles.header__nav}>
-        <li className={styles.header__nav__item}>
-          <BsQuestionCircle />
-          <Link>Giới thiệu</Link>
-        </li>
-        <li className={styles.header__nav__item}>
-          <FaLanguage />
-          <Link>
-            VI <FaChevronDown />
-          </Link>
-        </li>
+        {isLogin && (
+          <li className={styles.header__nav__item}>
+            <BsQuestionCircle />
+            <Link>Giới thiệu</Link>
+          </li>
+        )}
+        {isLogin && (
+          <li className={styles.header__nav__item}>
+            <FaLanguage />
+            <Link>
+              VI <FaChevronDown />
+            </Link>
+          </li>
+        )}
+
         <li className={classNames(styles.header__nav__item, "flex-1")}>
           <Link to={"/"}>
             <img src="https://simgbb.com/images/logo.png" alt="Logo" />
@@ -44,10 +49,6 @@ function Header() {
 
         {isLogin && (
           <>
-            {/* <li className={styles.header__nav__item}>
-              <FaCloudUploadAlt />
-              <Link>Upload</Link>
-            </li> */}
             <li className={styles.header__nav__item}>
               <UserDropdown user={user} onLogout={onLogout} />
             </li>

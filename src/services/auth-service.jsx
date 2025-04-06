@@ -1,8 +1,11 @@
-import { apiUser } from "../config/User";
+import axios from "axios";
 
 export const apiRegister = async (dataRegister) => {
   try {
-    const response = await apiUser.post("/auth/register", dataRegister);
+    const response = await axios.post(
+      "http://localhost:8080/auth/register",
+      dataRegister
+    );
     return response?.data;
   } catch (error) {
     return error?.response?.data;
@@ -11,7 +14,10 @@ export const apiRegister = async (dataRegister) => {
 
 export const apiVerifyOtpRegister = async (dataOtp) => {
   try {
-    const response = await apiUser.post("/auth/verify-otp-register", dataOtp);
+    const response = await axios.post(
+      "http://localhost:8080/auth/verify-otp-register",
+      dataOtp
+    );
     return response?.data;
   } catch (error) {
     return error?.response?.data;
@@ -20,7 +26,7 @@ export const apiVerifyOtpRegister = async (dataOtp) => {
 
 export const apiForgotPassword = async (dataForgotPassword) => {
   try {
-    const response = await apiUser.post(
+    const response = await axios.post(
       "/auth/forgot-password",
       dataForgotPassword
     );
@@ -31,8 +37,8 @@ export const apiForgotPassword = async (dataForgotPassword) => {
 };
 export const apiVerifyOtpForgotPassword = async (dataOtp) => {
   try {
-    const response = await apiUser.post(
-      "/auth/verify-otp-forgot-password",
+    const response = await axios.post(
+      "http://localhost:8080/auth/verify-otp-forgot-password",
       dataOtp
     );
     return response?.data;
@@ -43,7 +49,10 @@ export const apiVerifyOtpForgotPassword = async (dataOtp) => {
 
 export const apiLogin = async (dataLogin) => {
   try {
-    const response = await apiUser.post("/auth/access", dataLogin);
+    const response = await axios.post(
+      "http://localhost:8080/auth/access",
+      dataLogin
+    );
     return response?.data;
   } catch (error) {
     return error?.response?.data;
@@ -52,7 +61,10 @@ export const apiLogin = async (dataLogin) => {
 
 export const oauthLogin = async (dataLogin) => {
   try {
-    const response = await apiUser.post("/auth/oauth/login", dataLogin);
+    const response = await axios.post(
+      "http://localhost:8080/auth/oauth/login",
+      dataLogin
+    );
     return response?.data;
   } catch (error) {
     return error?.response?.data;

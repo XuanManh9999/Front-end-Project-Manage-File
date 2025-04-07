@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Form, Input, Button, Upload } from "antd";
+import { Form, Input, Button, Upload, Modal } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import ModalCommon from "../ModalCommon";
 import styles from "./FormModal.module.scss";

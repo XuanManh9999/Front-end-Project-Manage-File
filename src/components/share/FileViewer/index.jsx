@@ -23,8 +23,6 @@ const FileViewer = ({
   isSelected,
   onSelectChange,
 }) => {
-  console.log("Check fileUrl", fileUrl);
-
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
 
   const getExtension = (url) => {

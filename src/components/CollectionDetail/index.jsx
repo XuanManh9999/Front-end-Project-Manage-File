@@ -32,7 +32,6 @@ const options = [
 
 function CollectionDetail() {
   const nav = useNavigate();
-  // lai id collection trong url bang hook useParams
   const { id } = useParams();
 
   const [selectedFileIds, setSelectedFileIds] = useState([]);
@@ -209,6 +208,8 @@ function CollectionDetail() {
   };
 
   const handleSubmidUpdateFile = async (data, file) => {
+    console.log("Check file", file);
+
     if (!data.name) {
       message.error("Tên file không được để trống");
       return;
@@ -228,6 +229,8 @@ function CollectionDetail() {
   };
 
   const handleSubmidUploadFileToCollection = async (data) => {
+    console.log("Check data", data);
+
     const formData = new FormData();
 
     const list_file_ = data?.file?.fileList?.map((item) => item.originFileObj);

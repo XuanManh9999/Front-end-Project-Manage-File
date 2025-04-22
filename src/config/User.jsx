@@ -2,6 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 const apiUser = axios.create({
   baseURL: "http://localhost:8080",
+  timeout: 30000, // thời gian chờ tối đa là 30 giây
 });
 
 apiUser.interceptors.request.use(

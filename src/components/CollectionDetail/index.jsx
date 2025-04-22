@@ -244,7 +244,7 @@ function CollectionDetail() {
       return;
     }
 
-    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    const MAX_FILE_SIZE = 200 * 1024 * 1024; // 50MB
     for (let file of list_file_) {
       if (file.size > MAX_FILE_SIZE) {
         message.error(

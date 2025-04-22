@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./FileViewer.module.scss";
+import { Button } from "antd";
 import {
   FaDownload,
   FaTrash,
@@ -31,6 +32,17 @@ const FileViewer = ({
   };
 
   const extension = fileType ? fileType : getExtension(fileUrl);
+  const getDownloadUrl = (fileUrl) => {
+    if (!fileUrl) return "#";
+    try {
+      const url = new URL(fileUrl);
+      const parts = url.pathname.split("/upload/");
+      // Chuyển sang link dạng fl_attachment đúng chuẩn
+      return `${url.origin}${parts[0]}/upload/fl_attachment/${parts[1]}`;
+    } catch (err) {
+      return fileUrl;
+    }
+  };
 
   const renderActions = () => (
     <div className={styles.actions}>
@@ -87,11 +99,12 @@ const FileViewer = ({
           alignItems: "center",
           gap: "6px",
         }}
-        href={fileUrl}
+        href={getDownloadUrl(fileUrl)}
         download
-        target="_blank"
         rel="noopener noreferrer">
-        <FaDownload /> Tải file
+        <Button type="default" size="small">
+          <FaDownload /> Tải file
+        </Button>
       </a>
     </div>
   );

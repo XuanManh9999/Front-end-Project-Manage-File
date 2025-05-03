@@ -45,7 +45,7 @@ function Login() {
   const handleSubmidLogin = async () => {
     if (
       login.username === "" ||
-      login.username.length < 6 ||
+      login.username.length < 5 ||
       login.password === "" ||
       login.password.length < 6
     ) {
